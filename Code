@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <ctype.h> // For isdigit function
+
+#define SYNC_TOKEN ';' // Synchronization token to recover from errors
+
+// Function to simulate parsing an expression
+void parseExpression(char *input) {
+    int i = 0;
+    
+    while (input[i] != '\0') {
+        // Skip spaces
+        if (input[i] == ' ') {
+            i++;
+            continue;
+        }
+
+        // If the character is a digit, it's part of a valid expression
+        if (isdigit(input[i])) {
+            printf("Parsed number: %c\n", input[i]);
+        } 
+        // If the character is an operator, it's part of a valid expression
+        else if (input[i] == '+' || input[i] == '-' || input[i] == '*' || input[i] == '/') {
+            printf("Parsed operator: %c\n", input[i]);
+        } 
+        // If an invalid character is found, enter panic mode
+        else {
+            printf("Error: Invalid character '%c' encountered.\n", input[i]);
+            // Enter panic mode recovery
+            printf("Entering panic mode recovery...\n");
+            while (input[i] != SYNC_TOKEN && input[i] != '\0') {
+                i++; // Skip until SYNC_TOKEN or end of input
+            }
+            if (input[i] == SYNC_TOKEN) {
+                printf("Recovery complete. Synchronizing at token '%c'.\n", SYNC_TOKEN);
+                i++;  // Move past the SYNC_TOKEN to continue parsing
+            } else {
+                printf("End of input reached during panic mode recovery.\n");
+                return;
+            }
+            continue;
+        }
+        i++; // Move to the next character
+    }
+}
+
+int main() {
+    char input[100];
+
+    // Simulating user input
+    printf("Enter expression: ");
+    fgets(input, sizeof(input), stdin);
+
+    // Parse the input with panic mode recovery
+    parseExpression(input);
+
+    return 0;
+}
